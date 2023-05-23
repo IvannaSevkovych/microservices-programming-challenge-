@@ -1,5 +1,3 @@
-# Goals of Week 2
-
 ## Build the image
 ```
 docker build . -t user-management
