@@ -14,9 +14,9 @@ def get_orders():
 
 @app.route('/orders', methods=['POST'])
 def add_order():
-    orders.append(request.get_json())
     if not orders:
         return 'No order added', 400
+    orders.append(request.get_json())
     return orders, 201
 
 @app.route("/orders/<int:id>", methods=['GET'])
