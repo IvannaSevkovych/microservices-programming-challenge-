@@ -1,4 +1,5 @@
 import { products } from "../../../data/products";
+import { methodNotSupportedResponse } from "../../../helpers/defaultResponses";
 
 export default function handler(req, res) {
   const { id } = req.query;
@@ -28,7 +29,7 @@ export default function handler(req, res) {
       break;
 
     default:
-      res.status(400).send(`This request method is not supported`);
+      methodNotSupportedResponse(res);
       break;
   }
 }
