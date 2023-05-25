@@ -3,6 +3,9 @@ app = Flask(__name__)
 
 orders = [{"id": 1, "userId": 1, "productIds": [1, 2]}, {"id": 2, "userId": 2, "productIds": [2, 3]}]
 
+def findRequestedOrder(id):
+   return next((order for order in orders if order["id"] == id), None)
+
 @app.route("/orders", methods=['GET'])
 def get_orders():
     if not orders:
@@ -18,18 +21,18 @@ def add_order():
 
 @app.route("/orders/<int:id>", methods=['GET'])
 def get_order_by_id(id):
-    requestedOrder = next((order for order in orders if order["id"] == id), None)
+    requestedOrder = findRequestedOrder(id)
 
     if not requestedOrder:
-        return 'order with id ' + str(id) + ' was not found', 404
+        return f'order with id {id} was not found', 404
 
     return jsonify(requestedOrder), 200
 
 @app.route("/orders/<int:id>", methods=['PUT'])
 def put_order_by_id(id):
-    requestedOrder = next((order for order in orders if order["id"] == id), None)
+    requestedOrder = findRequestedOrder(id)
     if not requestedOrder:
-        return 'Order with id ' + str(id) + ' was not found', 400
+        return f'Order with id {id} was not found', 404
 
     orders[orders.index(requestedOrder)] = request.get_json()
-    return 'Order with id ' + str(id) + ' was updated', 200
+    return f'Order with id {id} was updated', 200
