@@ -1,0 +1,20 @@
+version: '3'
+services:
+  user-management:
+    build:
+      context: ./user-management
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+  product-catalog:
+    build:
+      context: ./product-catalog
+      dockerfile: Dockerfile
+    ports:
+      - "8091:3000"
+  order:
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    ports:
+      - "8092:5000"
