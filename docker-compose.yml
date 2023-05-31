@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8090:8090"
+    depends_on:
+      - postgres-db
   product-catalog:
     build:
       context: ./product-catalog
@@ -18,3 +20,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8092:5000"
+
+  postgres-db:
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5431:5432'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
