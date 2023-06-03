@@ -1,4 +1,5 @@
 node_modules/
 order/__pycache__
 .env
+data/
 volumes/
