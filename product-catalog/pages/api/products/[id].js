@@ -1,5 +1,6 @@
 import { connectToDatabase } from "../../../helpers/db";
 import { methodNotSupportedResponse } from "../../../helpers/defaultResponses";
+import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
   const db = await connectToDatabase();
@@ -8,7 +9,9 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET":
-      const requestedProduct = await products.findOne({ _id: id });
+      const requestedProduct = await collection.findOne({
+        _id: new ObjectId(id),
+      });
       if (!requestedProduct) {
         res.status(404).send(`Product with id ${id} was not found`);
         return;
@@ -16,7 +19,10 @@ export default async function handler(req, res) {
       res.status(200).json(requestedProduct);
       break;
     case "PUT":
-      const result = await products.updateOne({ _id: id }, { $set: req.body });
+      const result = await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: req.body }
+      );
 
       if (result.modifiedCount === 0) {
         return res.status(404).json({ message: "Product not found" });
@@ -28,8 +34,10 @@ export default async function handler(req, res) {
       });
       break;
     case "DELETE":
-      const result = await products.deleteOne({ _id: id });
-      if (result.deletedCount === 0) {
+      const deleteResult = await collection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (deleteResult.deletedCount === 0) {
         return res.status(404).json({ message: "Product not found" });
       }
 

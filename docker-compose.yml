@@ -56,7 +56,7 @@ services:
 
   # TODO adjust volumesw to new structure. See postgres-db-order
   mongo-db:
-    image: mongo
+    image: mongo:7.0.0-rc2
     ports:
       - '27017:27017'
     volumes:

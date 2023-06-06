@@ -15,8 +15,17 @@ export default async function handler(req, res) {
       }
       break;
     case "POST":
-      const result = await products.insertOne(req.body);
-      res.status(201).json(result.ops[0]);
+      const product = req.body;
+      const result = await collection.insertOne(product);
+      if (result.acknowledged) {
+        const insertedProductId = result.insertedId;
+        res.status(201).json({
+          message: "Product inserted.",
+          insertedProductId: insertedProductId,
+        });
+      } else {
+        res.status(500).json({ message: "Failed to insert product." });
+      }
       break;
 
     default:
