@@ -24,6 +24,17 @@ services:
       - "8092:5000"
     depends_on:
       - postgres-db-order
+      - rabbit-mq
+      - shipping # just for testing-to make sure consuming starts before sending
+  shipping:
+    build:
+      context: ./shipping
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    depends_on:
+      - rabbit-mq
+    restart: always
 
   # TODO adjust volumesw to new structure. See postgres-db-order
   postgres-db-user-management:
