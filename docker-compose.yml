@@ -76,6 +76,11 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./volumes/postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres-db-order:
     image: postgres:14.1-alpine
@@ -90,6 +95,11 @@ services:
     volumes:
       - ./order/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./order/db/:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # TODO adjust volumesw to new structure. See postgres-db-order
   mongo-db:
