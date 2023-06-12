@@ -39,6 +39,14 @@ services:
       - postgres-db-order
       - rabbit-mq
       - shipping # just for testing-to make sure consuming starts before sending
+    restart: always
+    # TODO find out why is container exits all the time
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8092/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   shipping:
     build:
       context: ./shipping

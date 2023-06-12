@@ -27,6 +27,10 @@ def get_db():
     )
     return conn
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return 'Application is healthy'
+
 @app.route("/orders", methods=['GET'])
 def get_orders():
 
