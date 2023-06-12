@@ -56,6 +56,11 @@ services:
     depends_on:
       - rabbit-mq
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8093/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   # TODO adjust volumesw to new structure. See postgres-db-order
   postgres-db-user-management:

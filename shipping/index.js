@@ -1,4 +1,14 @@
+const express = require("express");
 const amqp = require("amqplib");
+
+const PORT = 8093;
+const app = express();
+app.use(express.json());
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", message: "Application is healthy" });
+});
 
 async function consumeMessages() {
   try {
@@ -27,3 +37,7 @@ async function consumeMessages() {
 
 // Start consuming messages
 consumeMessages();
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
