@@ -14,6 +14,11 @@ const PORT = 8090;
 
 app.use(express.json());
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", message: "Application is healthy" });
+});
+
 app.get("/users", (req, res) => {
   pool.query("SELECT * FROM public.users", (error, result) => {
     if (error) {

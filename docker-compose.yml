@@ -8,6 +8,12 @@ services:
       - "8090:8090"
     depends_on:
       - postgres-db-user-management
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   product-catalog:
     build:
       context: ./product-catalog
