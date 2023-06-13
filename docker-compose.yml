@@ -1,5 +1,16 @@
 version: '3'
 services:
+  nginx:
+      image: nginx:latest
+      ports:
+        - "8094:8094"
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      depends_on:
+        - user-management
+        - product-catalog
+        # - order
+
   user-management:
     build:
       context: ./user-management
