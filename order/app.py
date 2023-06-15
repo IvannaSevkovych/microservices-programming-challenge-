@@ -32,7 +32,6 @@ def get_db():
 
 # Rabbit MQ producer
 def send_order_to_queue_with_retry():
-    print("send_order_to_queue_with_retry")
     not_sent = True
     while not_sent:
         try:
@@ -40,7 +39,7 @@ def send_order_to_queue_with_retry():
             # we get here if send was successful
             not_sent = False
         except pika.exceptions.AMQPConnectionError:
-            print('Retry in 2 seconds')
+            print('Retry in 2 seconds', flush=True)
             time.sleep(2)
 
 def send():
@@ -53,7 +52,7 @@ def send():
                         routing_key='hello', # queue name
                         body='Hello World!')
     if connection:
-        print(" [x] Sent 'Hello World!'")
+        print(" [x] Sent 'Hello World!'", flush=True)
 
     connection.close()
 
