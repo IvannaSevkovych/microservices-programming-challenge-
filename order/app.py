@@ -1,8 +1,11 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 import requests
 import psycopg2
 from dotenv import load_dotenv
 import os
+
+import pika
+import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,6 +29,33 @@ def get_db():
         port=app.config['DATABASE']['port']
     )
     return conn
+
+# Rabbit MQ producer
+def send_order_to_queue_with_retry():
+    print("send_order_to_queue_with_retry")
+    not_sent = True
+    while not_sent:
+        try:
+            send()
+            # we get here if send was successful
+            not_sent = False
+        except pika.exceptions.AMQPConnectionError:
+            print('Retry in 2 seconds')
+            time.sleep(2)
+
+def send():
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit-mq'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='hello')
+
+    channel.basic_publish(exchange='',
+                        routing_key='hello', # queue name
+                        body='Hello World!')
+    if connection:
+        print(" [x] Sent 'Hello World!'")
+
+    connection.close()
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -51,10 +81,15 @@ def get_orders():
         return 'No orders found', 404
     return jsonify(rows), 200
 
-
-# TODO
 @app.route('/orders', methods=['POST'])
-def add_order():
+def handle_order():
+    response = insert_order_into_database()
+    # access response status code
+    if response[1] == 200:
+        send_order_to_queue_with_retry()
+    return response
+
+def insert_order_into_database():
     # Product service configuration
     PRODUCT_SERVICE_URL = 'http://product-catalog:3000'
 
@@ -114,6 +149,7 @@ def add_order():
 
             # Return a success message
             return jsonify({'message': 'Data inserted successfully'}), 200
+
         except Exception as e:
             # Rollback the transaction in case of any error
             conn.rollback()
