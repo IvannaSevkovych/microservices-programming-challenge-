@@ -72,6 +72,15 @@ services:
       timeout: 5s
       retries: 3
 
+  shipping_python:
+    build:
+      context: ./shipping_python
+      dockerfile: Dockerfile
+    ports:
+      - "8095:8095"
+    depends_on:
+      - rabbit-mq
+
   # TODO adjust volumesw to new structure. See postgres-db-order
   postgres-db-user-management:
     image: postgres:14.1-alpine
