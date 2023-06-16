@@ -8,7 +8,9 @@ def main():
     channel.queue_declare(queue='hello')
 
     def callback(ch, method, properties, body):
-        print(" [x] Received %r" % body, flush=True)
+        #  convert byte string into a regular string
+        body_str = body.decode("utf-8")
+        print(f" [x] Received {body_str}", flush=True)
 
     channel.basic_consume(queue='hello',
                         auto_ack=True,

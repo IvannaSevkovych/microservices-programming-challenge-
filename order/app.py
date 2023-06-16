@@ -3,6 +3,7 @@ import requests
 import psycopg2
 from dotenv import load_dotenv
 import os
+import json
 
 import pika
 import time
@@ -31,18 +32,18 @@ def get_db():
     return conn
 
 # Rabbit MQ producer
-def send_order_to_queue_with_retry():
+def send_order_to_queue_with_retry(payload):
     not_sent = True
     while not_sent:
         try:
-            send()
+            send(payload)
             # we get here if send was successful
             not_sent = False
         except pika.exceptions.AMQPConnectionError:
             print('Retry in 2 seconds', flush=True)
             time.sleep(2)
 
-def send():
+def send(payload):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit-mq'))
     channel = connection.channel()
 
@@ -50,9 +51,9 @@ def send():
 
     channel.basic_publish(exchange='',
                         routing_key='hello', # queue name
-                        body='Hello World!')
+                        body=json.dumps(payload))
     if connection:
-        print(" [x] Sent 'Hello World!'", flush=True)
+        print(f"sent:{payload}", flush=True)
 
     connection.close()
 
@@ -85,7 +86,8 @@ def handle_order():
     response = insert_order_into_database()
     # access response status code
     if response[1] == 200:
-        send_order_to_queue_with_retry()
+        req_body=request.get_json()
+        send_order_to_queue_with_retry(req_body)
     return response
 
 def insert_order_into_database():
