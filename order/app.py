@@ -47,10 +47,10 @@ def send(payload):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit-mq'))
     channel = connection.channel()
 
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='order')
 
     channel.basic_publish(exchange='',
-                        routing_key='hello', # queue name
+                        routing_key='order', # queue name
                         body=json.dumps(payload))
     if connection:
         print(f"sent:{payload}", flush=True)

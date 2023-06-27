@@ -17,7 +17,7 @@ async function consumeMessages() {
     const channel = await connection.createChannel();
 
     // Declare the queue from which to consume messages
-    const queueName = "hello";
+    const queueName = "order";
     await channel.assertQueue(queueName, { durable: false });
 
     // Consume messages from the queue
