@@ -34,7 +34,37 @@ app.get("/users", (req, res) => {
 app.post("/users", (req, res) => {
   const { id, name, email } = req.body;
 
-  // TODO add data validation
+  // Validate id
+  if (typeof id !== "number" || id <= 0) {
+    return res
+      .status(400)
+      .json({ error: "Invalid id. Must be a positive integer." });
+  }
+
+  // Validate name
+  if (typeof name !== "string" || name.length === 0 || name.length > 50) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Invalid name. Must be a non-empty string with maximum length of 50 characters.",
+      });
+  }
+
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (
+    typeof email !== "string" ||
+    !emailRegex.test(email) ||
+    email.length > 50
+  ) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Invalid email. Must be a valid email address with maximum length of 50 characters.",
+      });
+  }
 
   pool.query(
     "INSERT INTO public.users (id, name, email) VALUES ($1, $2, $3) RETURNING id, name, email",
