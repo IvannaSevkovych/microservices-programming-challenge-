@@ -2,6 +2,8 @@ const express = require("express");
 const { Pool } = require("pg");
 require("dotenv").config();
 
+const { v4: uuidv4 } = require("uuid");
+
 const app = express();
 const pool = new Pool({
   host: process.env.POSTGRES_HOST,
@@ -32,23 +34,16 @@ app.get("/users", (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  const { id, name, email } = req.body;
+  const { name, email } = req.body;
 
-  // Validate id
-  if (typeof id !== "number" || id <= 0) {
-    return res
-      .status(400)
-      .json({ error: "Invalid id. Must be a positive integer." });
-  }
+  const id = uuidv4(); // Generate a unique id
 
   // Validate name
   if (typeof name !== "string" || name.length === 0 || name.length > 50) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Invalid name. Must be a non-empty string with maximum length of 50 characters.",
-      });
+    return res.status(400).json({
+      error:
+        "Invalid name. Must be a non-empty string with maximum length of 50 characters.",
+    });
   }
 
   // Validate email
@@ -58,12 +53,10 @@ app.post("/users", (req, res) => {
     !emailRegex.test(email) ||
     email.length > 50
   ) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Invalid email. Must be a valid email address with maximum length of 50 characters.",
-      });
+    return res.status(400).json({
+      error:
+        "Invalid email. Must be a valid email address with maximum length of 50 characters.",
+    });
   }
 
   pool.query(
